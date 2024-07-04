@@ -21,3 +21,56 @@ Human:
 Assistant: 
 
 这段文字是属于:地点面向,性价比面向,其他面向,地点情绪: 正面 性价比情绪: 正面 其他情绪: 正面 整体情绪: 正面
+````
+## 5.	系統建置之步驟
+## 5.1資料前處理-整理資料
+讀取” 飯店顧客留言之面向情緒判別留言資料集共16,027萬筆”的CSV檔案，分別更新到Json檔案的” instruction”、”input”、”output”欄位格式，最後再將繁體中文字轉換成簡體中文字。
+格式如下:
+```text
+{
+"instruction": "請判斷以下文字是屬於何種面向類別? 情緒是正面、負面、中立、無情緒哪一種?", 
+"input": "浴室環境能再改善", 
+"output": "這段文字是屬於:設施面向,設施情緒: 負面 整體情緒: 負面"
+}
+````
+
+## 5.2 Tokenizer預訓練中文文本模型
+Tokenizerau模型：Langboat/bloom-389m-zh
+修改prompt格式：
+```text
+f"Human: \n{instruction} {input_text}\nAssistant: \n\n{output_text}"
+````
+
+## 5.3 Langboat簡體Clab訓練-參考老師的全微調程式碼
+BATCH_SIZE = 128
+MICRO_BATCH_SIZE = 10
+EVAL_BATCH_SIZE = 8
+fp16=True,
+train_epochs=5,  #訓練回合
+
+## 5.4基礎模型使用gradio呈現-參考老師基礎模型程式碼
+
+## 6.	訓練成果展示
+訓練回合：5回合
+訓練實際時間：1 小時2分19秒
+訓練輸出（TrainOutput）：
+global_step= 655
+training_loss= 0.019018281507128067
+train_loss= 0.019018281507128067
+epoch= 5
+
+## 7.	結論與心得
+### A.	首先，在資料前處理的部分，需要去了解模型可以使用的資料格式，再進行調整，以及在了解Human和Assistant之間的格式花了不少時間。
+### B.	接著處理完後，放到Clab上訓練還要考慮容量的問題，因為Checkpoint會一直刷新，所以容量一下就爆滿了，需要時刻盯著。
+### C.	在最後，成果展示時，看到Chat機器人的回覆真的蠻有趣的，雖然有時回覆結果不盡人意，但還是感受到Chat機器人的效果。
+ 
+##　8.	分工
+組長姓名:蘇羿璇
+負責工作:研究測試、實作展示、報告彙整
+
+## 參考資料
+###　A.	應用T5語言模型於顧客留言之多面向情緒分析，陳姿妤(2023)。
+#### 參考連結：https://hdl.handle.net/11296/pfdum2
+### B.	clhuang/t5-hotel-review-sentiment
+#### 參考連結：https://huggingface.co/clhuang/t5-hotel-review-sentiment
+### C.	參考老師上課的所有程式碼、ChatGPT
